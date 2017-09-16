@@ -33,9 +33,8 @@ if(length(args)==0){
 #For testing
 # bamfname<-'./contigs/ABI-HHV6A_S385_L001/aligned_scaffolds_hhv6A_ref_U1102.bam';
 # reffname<-'./NC_001664.2.fasta'
-# ncores<-detectCores()
-	
-newref<-make_ref_from_assembly(bamfname,reffname,ncores)
+
+newref<-make_ref_from_assembly(bamfname,reffname)
 
 if(newref==FALSE) print('Failed to generate consensus from scaffolds')
 
