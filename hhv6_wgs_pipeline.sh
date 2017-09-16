@@ -231,6 +231,7 @@ printf "\n\nRe-mapping reads to assembled sequence ... \n\n\n"
 mkdir -p ./remapped_reads
 
 if [[ $paired == "false" ]]
+then
 for ref in hhv6A_ref_U1102 hhv6B_ref_z29; do
 bowtie2-build './ref_for_remapping/'$sampname'_aligned_scaffolds_'$ref'_consensus.fasta' './ref_for_remapping/'$sampname'_aligned_scaffolds_'$ref
 bowtie2 -x './ref_for_remapping/'$sampname'_aligned_scaffolds_'$ref -U './preprocessed_fastq/'$sampname'_preprocessed.fastq.gz' -p ${SLURM_CPUS_PER_TASK} -S './remapped_reads/'$sampname'_'$ref'.sam'
@@ -238,6 +239,7 @@ done
 fi
  
 if [[ $paired == "true" ]]
+then
 for ref in hhv6A_ref_U1102 hhv6B_ref_z29; do
 bowtie2-build './ref_for_remapping/'$sampname'_aligned_scaffolds_'$ref'_consensus.fasta' './ref_for_remapping/'$sampname'_aligned_scaffolds_'$ref
 bowtie2 -x './ref_for_remapping/'$sampname'_aligned_scaffolds_'$ref -1 './preprocessed_fastq/'$sampname'_preprocessed_paired_r1.fastq.gz' -2 './preprocessed_fastq/'$sampname'_preprocessed_paired_r2.fastq.gz' -p ${SLURM_CPUS_PER_TASK} -S './remapped_reads/'$sampname'_'$ref'.sam'
@@ -252,6 +254,7 @@ then
 rm './remapped_reads/'$sampname'_'$ref'.sam'
 ~/samtools-1.3.1/samtools sort -o './remapped_reads/'$sampname'_'$ref'.sorted.bam' './remapped_reads/'$sampname'_'$ref'.bam'
 rm './remapped_reads/'$sampname'_'$ref'.bam'
+mv './remapped_reads/'$sampname'_'$ref'.sorted.bam'  './remapped_reads/'$sampname'_'$ref'.bam' 
 else
 echo 'No sam file found'
 fi
