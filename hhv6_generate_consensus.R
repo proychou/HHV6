@@ -34,10 +34,8 @@ if(length(args)==0){
 # s1<-'/fh/fast/jerome_k/HHV6_PR/fastq_files/2017_08_10//ABI-HHV6A_S385_L001_R1_001.fastq.gz'
 
 #Files, directories, target site
-merged_bam_folder<-'./merged_bam_map_plus_assembly/'; #where are merged bams (mapping + assembly)
+merged_bam_folder<-'./remapped_reads/'; 
 sampname<-strsplit(basename(s1),'_R1_001.fastq*')[[1]][1];
-fastq_dir<-dirname(s1); 
-assemblydir<-paste('./contigs/',grep(sampname,dir('./contigs/'),value=T),'/',sep='');
 mapped_reads_folder<-'./mapped_reads/';
 con_seqs_dir<-'./consensus_seqs_all';
 
