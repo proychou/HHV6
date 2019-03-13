@@ -118,7 +118,7 @@ fastqc './preprocessed_fastq/'$sampname'_preprocessed_paired_r1.fastq.gz' './pre
 printf "\n\nMapping reads to reference seqs hhv6A_ref_U1102 and hhv6B_ref_z29 ... \n\n\n"
 mkdir -p ./mapped_reads
 for ref in hhv6A_ref_U1102 hhv6B_ref_z29; do
-bowtie2 -x $ref -1 './preprocessed_fastq/'$sampname'_preprocessed_paired_r1.fastq.gz' -2 './preprocessed_fastq/'$sampname'_preprocessed_paired_r2.fastq.gz' -p ${SLURM_CPUS_PER_TASK} -S './mapped_reads/'$sampname'_'$ref'.sam'
+bowtie2 -x ./refs/$ref -1 './preprocessed_fastq/'$sampname'_preprocessed_paired_r1.fastq.gz' -2 './preprocessed_fastq/'$sampname'_preprocessed_paired_r2.fastq.gz' -p ${SLURM_CPUS_PER_TASK} -S './mapped_reads/'$sampname'_'$ref'.sam'
 done
 
 #Assemble with SPAdes 
@@ -178,7 +178,7 @@ fastqc './preprocessed_fastq/'$sampname'_preprocessed.fastq.gz' -o ./fastqc_repo
 printf "\n\nMapping reads to reference seqs hhv6A_ref_U1102 and hhv6B_ref_z29 ... \n\n\n"
 mkdir -p ./mapped_reads
 for ref in hhv6A_ref_U1102 hhv6B_ref_z29; do
-bowtie2 -x $ref -U './preprocessed_fastq/'$sampname'_preprocessed.fastq.gz' -p ${SLURM_CPUS_PER_TASK} -S './mapped_reads/'$sampname'_'$ref'.sam'
+bowtie2 -x ./refs/$ref -U './preprocessed_fastq/'$sampname'_preprocessed.fastq.gz' -p ${SLURM_CPUS_PER_TASK} -S './mapped_reads/'$sampname'_'$ref'.sam'
 done
 
 #Assemble with SPAdes
@@ -208,7 +208,7 @@ done
 #Map contigs to refs
 printf "\n\nMapping scaffolds to reference seqs hhv6A_ref_U1102 hhv6B_ref_z29 ... \n\n\n"
 for ref in hhv6A_ref_U1102 hhv6B_ref_z29; do
-mugsy --directory `readlink -f './contigs/'$sampname` --prefix 'aligned_scaffolds_'$ref $ref'.fasta' `readlink -f './contigs/'$sampname'/scaffolds.fasta'`
+mugsy --directory `readlink -f './contigs/'$sampname` --prefix 'aligned_scaffolds_'$ref ./refs/$ref'.fasta' `readlink -f './contigs/'$sampname'/scaffolds.fasta'`
 sed '/^a score=0/,$d' './contigs/'$sampname'/aligned_scaffolds_'$ref'.maf' > './contigs/'$sampname'/aligned_scaffolds_nonzero_'$ref'.maf'
 python ~/last-759/scripts/maf-convert sam -d './contigs/'$sampname'/aligned_scaffolds_nonzero_'$ref'.maf' > './contigs/'$sampname'/aligned_scaffolds_'$ref'.sam'
 ~/samtools-1.3.1/samtools view -bS -T $ref'.fasta' './contigs/'$sampname'/aligned_scaffolds_'$ref'.sam' | ~/samtools-1.3.1/samtools sort > './contigs/'$sampname'/'$sampname'_aligned_scaffolds_'$ref'.bam'
@@ -224,7 +224,7 @@ printf "\n\nMaking a reference sequence for remapping ... \n\n\n"
 mkdir -p ./ref_for_remapping
 for ref in hhv6A_ref_U1102 hhv6B_ref_z29; do
 bamfname='./contigs/'$sampname'/'$sampname'_aligned_scaffolds_'$ref'.bam'
-reffname=$ref'.fasta'
+reffname=./refs/$ref'.fasta'
 Rscript --vanilla hhv6_make_reference.R bamfname=\"$bamfname\" reffname=\"$reffname\" 
 done
 
