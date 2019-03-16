@@ -1,6 +1,6 @@
 #!/bin/bash
 #Rerunning Spades on samples that need to be merged
-cd /fh/fast/jerome_k/HHV6_PR/merging_runs/
+cd /fh/fast/jerome_k/HHV6_WGS/merging_runs/
 module load bowtie2/2.2.5
 module load R/3.5.1-foss-2016b-fh1
 module load prokka/1.13-foss-2016b-BioPerl-1.7.0
@@ -29,21 +29,21 @@ printf "Input arguments:\n\n"
 echo $@
 
 #Assemble with SPAdes 
-mkdir -p '/fh/fast/jerome_k/HHV6_PR/merging_runs/assembly/'$sampname
+mkdir -p '/fh/fast/jerome_k/HHV6_WGS/merging_runs/assembly/'$sampname
 eval $spades_command' -t '$SLURM_CPUS_PER_TASK
 
 #Delete some spades folders to free up space
-rm -r '/fh/fast/jerome_k/HHV6_PR/merging_runs/assembly/'$sampname'/corrected' 
+rm -r '/fh/fast/jerome_k/HHV6_WGS/merging_runs/assembly/'$sampname'/corrected' 
 
 
 #Map contigs to refs
 printf "\n\nMapping scaffolds to reference seqs hhv6A_ref_U1102 hhv6B_ref_z29 ... \n\n\n"
 for ref in hhv6A_ref_U1102 hhv6B_ref_z29; do
-mugsy --directory `readlink -f '/fh/fast/jerome_k/HHV6_PR/merging_runs/assembly/'$sampname` --prefix 'aligned_scaffolds_'$ref /fh/fast/jerome_k/HHV6_PR/$ref'.fasta' `readlink -f '/fh/fast/jerome_k/HHV6_PR/merging_runs/assembly/'$sampname'/scaffolds.fasta'`
-sed '/^a score=0/,$d' '/fh/fast/jerome_k/HHV6_PR/merging_runs/assembly/'$sampname'/aligned_scaffolds_'$ref'.maf' > '/fh/fast/jerome_k/HHV6_PR/merging_runs/assembly/'$sampname'/aligned_scaffolds_nonzero_'$ref'.maf'
-python ~/last-759/scripts/maf-convert sam -d '/fh/fast/jerome_k/HHV6_PR/merging_runs/assembly/'$sampname'/aligned_scaffolds_nonzero_'$ref'.maf' > '/fh/fast/jerome_k/HHV6_PR/merging_runs/assembly/'$sampname'/aligned_scaffolds_'$ref'.sam'
-~/samtools-1.3.1/samtools view -bS -T /fh/fast/jerome_k/HHV6_PR/$ref'.fasta' '/fh/fast/jerome_k/HHV6_PR/merging_runs/assembly/'$sampname'/aligned_scaffolds_'$ref'.sam' | ~/samtools-1.3.1/samtools sort > '/fh/fast/jerome_k/HHV6_PR/merging_runs/assembly/'$sampname'/'$sampname'_aligned_scaffolds_'$ref'.bam'
-rm '/fh/fast/jerome_k/HHV6_PR/merging_runs/assembly/'$sampname'/aligned_scaffolds_'$ref'.sam'
+mugsy --directory `readlink -f '/fh/fast/jerome_k/HHV6_WGS/merging_runs/assembly/'$sampname` --prefix 'aligned_scaffolds_'$ref /fh/fast/jerome_k/HHV6_WGS/$ref'.fasta' `readlink -f '/fh/fast/jerome_k/HHV6_WGS/merging_runs/assembly/'$sampname'/scaffolds.fasta'`
+sed '/^a score=0/,$d' '/fh/fast/jerome_k/HHV6_WGS/merging_runs/assembly/'$sampname'/aligned_scaffolds_'$ref'.maf' > '/fh/fast/jerome_k/HHV6_WGS/merging_runs/assembly/'$sampname'/aligned_scaffolds_nonzero_'$ref'.maf'
+python ~/last-759/scripts/maf-convert sam -d '/fh/fast/jerome_k/HHV6_WGS/merging_runs/assembly/'$sampname'/aligned_scaffolds_nonzero_'$ref'.maf' > '/fh/fast/jerome_k/HHV6_WGS/merging_runs/assembly/'$sampname'/aligned_scaffolds_'$ref'.sam'
+~/samtools-1.3.1/samtools view -bS -T /fh/fast/jerome_k/HHV6_WGS/$ref'.fasta' '/fh/fast/jerome_k/HHV6_WGS/merging_runs/assembly/'$sampname'/aligned_scaffolds_'$ref'.sam' | ~/samtools-1.3.1/samtools sort > '/fh/fast/jerome_k/HHV6_WGS/merging_runs/assembly/'$sampname'/'$sampname'_aligned_scaffolds_'$ref'.bam'
+rm '/fh/fast/jerome_k/HHV6_WGS/merging_runs/assembly/'$sampname'/aligned_scaffolds_'$ref'.sam'
 done
 rm *.mugsy.log
 
@@ -53,9 +53,9 @@ rm *.mugsy.log
 printf "\n\nMaking a reference sequence for remapping ... \n\n\n"
 mkdir -p ./ref_for_remapping
 for ref in hhv6A_ref_U1102 hhv6B_ref_z29; do
-bamfname='/fh/fast/jerome_k/HHV6_PR/merging_runs/assembly/'$sampname'/'$sampname'_aligned_scaffolds_'$ref'.bam'
-reffname=/fh/fast/jerome_k/HHV6_PR/$ref'.fasta'
-Rscript --vanilla /fh/fast/jerome_k/HHV6_PR/hhv6_make_reference.R bamfname=\"$bamfname\" reffname=\"$reffname\" 
+bamfname='/fh/fast/jerome_k/HHV6_WGS/merging_runs/assembly/'$sampname'/'$sampname'_aligned_scaffolds_'$ref'.bam'
+reffname=/fh/fast/jerome_k/HHV6_WGS/$ref'.fasta'
+Rscript --vanilla /fh/fast/jerome_k/HHV6_WGS/hhv6_make_reference.R bamfname=\"$bamfname\" reffname=\"$reffname\" 
 done
 
 #Remap reads to "new" reference
@@ -87,7 +87,7 @@ rm ./ref_for_remapping/$sampname*.fai
 printf "\n\nMapping reads to reference seqs hhv6A_ref_U1102 hhv6B_ref_z29 ... \n\n\n"
 mkdir -p ./mapped_reads
 for ref in hhv6A_ref_U1102 hhv6B_ref_z29; do
-eval $bowtie_command' -p '$SLURM_CPUS_PER_TASK' -S ./mapped_reads/'$sampname'_'$ref'.sam -x /fh/fast/jerome_k/HHV6_PR/'$ref
+eval $bowtie_command' -p '$SLURM_CPUS_PER_TASK' -S ./mapped_reads/'$sampname'_'$ref'.sam -x /fh/fast/jerome_k/HHV6_WGS/'$ref
 done
 
 #Generate sorted bams for mapped reads
@@ -95,7 +95,7 @@ printf "\n\nMaking and sorting bam files ... \n\n\n"
 for ref in hhv6A_ref_U1102 hhv6B_ref_z29; do
 if [ -f './mapped_reads/'$sampname'_'$ref'.sam' ]
 then
-~/samtools-1.3.1/samtools view -bh -o './mapped_reads/'$sampname'_'$ref'.bam' './mapped_reads/'$sampname'_'$ref'.sam' -T '/fh/fast/jerome_k/HHV6_PR/'$ref'.fasta'  
+~/samtools-1.3.1/samtools view -bh -o './mapped_reads/'$sampname'_'$ref'.bam' './mapped_reads/'$sampname'_'$ref'.sam' -T '/fh/fast/jerome_k/HHV6_WGS/'$ref'.fasta'  
 rm './mapped_reads/'$sampname'_'$ref'.sam'
 ~/samtools-1.3.1/samtools sort -o './mapped_reads/'$sampname'_'$ref'.sorted.bam' './mapped_reads/'$sampname'_'$ref'.bam' 
 rm './mapped_reads/'$sampname'_'$ref'.bam' 
@@ -108,13 +108,13 @@ done
 printf "\n\nGenerating consensus sequence ... \n\n\n"
 mkdir -p ./consensus_seqs_all
 mkdir -p ./stats
-Rscript --vanilla '/fh/fast/jerome_k/HHV6_PR/hhv6_generate_consensus.R' s1=\"$sampname\"
+Rscript --vanilla '/fh/fast/jerome_k/HHV6_WGS/hhv6_generate_consensus.R' s1=\"$sampname\"
 
 
 #Annotate
 printf "\n\nAnnotating with prokka ... \n\n\n"
 mkdir -p ./annotations_prokka_6A
-prokka --outdir './annotations_prokka_6A/'$sampname'/' --force --kingdom 'Viruses' --genus 'Human herpesvirus 6A' --species '' --proteins HHV6_proteins.faa --locustag '' --strain $sampname --prefix $sampname --gcode 1 --evalue 1e-9 './annotations_prokka_6A/'$sampname/*.fa
+prokka --outdir './annotations_prokka_6A/'$sampname'/' --force --kingdom 'Viruses' --genus 'Human herpesvirus 6A' --species '' --proteins HHV6_WGSoteins.faa --locustag '' --strain $sampname --prefix $sampname --gcode 1 --evalue 1e-9 './annotations_prokka_6A/'$sampname/*.fa
 mkdir -p ./annotations_prokka_6B
-prokka --outdir './annotations_prokka_6B/'$sampname'/' --force --kingdom 'Viruses' --genus 'Human herpesvirus 6B' --species '' --proteins HHV6_proteins.faa --locustag '' --strain $sampname --prefix $sampname --gcode 1 --evalue 1e-9 './annotations_prokka_6B/'$sampname/*.fa
+prokka --outdir './annotations_prokka_6B/'$sampname'/' --force --kingdom 'Viruses' --genus 'Human herpesvirus 6B' --species '' --proteins HHV6_WGSoteins.faa --locustag '' --strain $sampname --prefix $sampname --gcode 1 --evalue 1e-9 './annotations_prokka_6B/'$sampname/*.fa
 
