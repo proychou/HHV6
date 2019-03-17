@@ -44,7 +44,7 @@ for ref in hhv6A_ref_U1102 hhv6B_ref_z29; do
 mugsy --directory `readlink -f '/fh/fast/jerome_k/HHV6_WGS/merging_runs/assembly/'$sampname` --prefix 'aligned_scaffolds_'$ref ./refs/$ref'.fasta' `readlink -f '/fh/fast/jerome_k/HHV6_WGS/merging_runs/assembly/'$sampname'/scaffolds.fasta'`
 sed '/^a score=0/,$d' '/fh/fast/jerome_k/HHV6_WGS/merging_runs/assembly/'$sampname'/aligned_scaffolds_'$ref'.maf' > '/fh/fast/jerome_k/HHV6_WGS/merging_runs/assembly/'$sampname'/aligned_scaffolds_nonzero_'$ref'.maf'
 python ~/last-759/scripts/maf-convert sam -d '/fh/fast/jerome_k/HHV6_WGS/merging_runs/assembly/'$sampname'/aligned_scaffolds_nonzero_'$ref'.maf' > '/fh/fast/jerome_k/HHV6_WGS/merging_runs/assembly/'$sampname'/aligned_scaffolds_'$ref'.sam'
-~/samtools-1.3.1/samtools view -bS -T /fh/fast/jerome_k/HHV6_WGS/ref/$ref'.fasta' '/fh/fast/jerome_k/HHV6_WGS/merging_runs/assembly/'$sampname'/aligned_scaffolds_'$ref'.sam' | ~/samtools-1.3.1/samtools sort > '/fh/fast/jerome_k/HHV6_WGS/merging_runs/assembly/'$sampname'/'$sampname'_aligned_scaffolds_'$ref'.bam'
+~/samtools-1.3.1/samtools view -bS -T ./refs/$ref'.fasta' '/fh/fast/jerome_k/HHV6_WGS/merging_runs/assembly/'$sampname'/aligned_scaffolds_'$ref'.sam' | ~/samtools-1.3.1/samtools sort > '/fh/fast/jerome_k/HHV6_WGS/merging_runs/assembly/'$sampname'/'$sampname'_aligned_scaffolds_'$ref'.bam'
 rm '/fh/fast/jerome_k/HHV6_WGS/merging_runs/assembly/'$sampname'/aligned_scaffolds_'$ref'.sam'
 done
 rm *.mugsy.log
@@ -56,7 +56,7 @@ printf "\n\nMaking a reference sequence for remapping ... \n\n\n"
 mkdir -p ./ref_for_remapping
 for ref in hhv6A_ref_U1102 hhv6B_ref_z29; do
 bamfname='/fh/fast/jerome_k/HHV6_WGS/merging_runs/assembly/'$sampname'/'$sampname'_aligned_scaffolds_'$ref'.bam'
-reffname=/fh/fast/jerome_k/HHV6_WGS/$ref'.fasta'
+reffname=./refs/$ref'.fasta'
 Rscript --vanilla /fh/fast/jerome_k/HHV6_WGS/hhv6_make_reference.R bamfname=\"$bamfname\" reffname=\"$reffname\" 
 done
 
