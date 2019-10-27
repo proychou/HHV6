@@ -50,7 +50,7 @@ if(conseq==TRUE){
 	
 	#Remove all Ns at the beginning and end of the seq, write to folder
 	for(ref in c('_hhv6A_ref_U1102','_hhv6B_ref_z29')){
-		fname<-grep(sampname,list.files(con_seqs_dir,ref,full.names=T),value=T);
+		fname<-grep(paste0('\\/',sampname,'_'),list.files(con_seqs_dir,ref,full.names=T),value=T);
 		con_seq<-readDNAStringSet(fname);
 		con_seq_trimmed<-DNAStringSet(gsub("N*N$",'',gsub("^N*",'',as.character(con_seq))));
 		names(con_seq_trimmed)<-substring(names(con_seq),1,20); #prokka needs contig name to be <=20 chars long
