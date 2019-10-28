@@ -2,7 +2,7 @@
 #Rerunning Spades on samples that need to be merged
 cd /fh/fast/jerome_k/HHV6_WGS/merging_runs/
 module load bowtie2/2.2.5
-module load R/3.5.1-foss-2016b-fh1
+module load R/3.6.0-foss-2016b-fh1
 module load prokka/1.13-foss-2016b-BioPerl-1.7.0
 module load parallel/20170222-foss-2016b
 module load Perl/5.28.0-foss-2016b
